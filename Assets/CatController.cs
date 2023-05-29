@@ -21,19 +21,15 @@ public class CatController : MonoBehaviour {
     [SerializeField] private float runningSpeed = 5f;
     [SerializeField] private float walkingSpeed = 5f;
     [SerializeField] private float jumpForce = 10f;
-    [SerializeField] private int cherries = 0;
-    [SerializeField] private float hurtForce = 10f;
-    [SerializeField] private AudioSource cherry;
     [SerializeField] private AudioSource jumping_path;
-    [SerializeField] private AudioSource falling_tile;
-    [SerializeField] private AudioSource walking_tile;
+    [SerializeField] private AudioSource falling_path;
+    [SerializeField] private AudioSource walking_path;
     [SerializeField] private AudioSource jumping_grass;
     [SerializeField] private AudioSource falling_grass;
     [SerializeField] private AudioSource walking_grass;
     [SerializeField] private AudioSource jumping_wood;
     [SerializeField] private AudioSource falling_wood;
     [SerializeField] private AudioSource walking_wood;
-    [SerializeField] private TextMeshProUGUI cherryText;
 
 
     private void Start()
@@ -54,74 +50,35 @@ public class CatController : MonoBehaviour {
         anim.SetInteger("state", (int)state); //sets animation based on Enumerator state
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "Collectable")
-        {
-            //cherry.Play();
-            Destroy(collision.gameObject); //Cherry destroy
-            cherries += 1;
-            cherryText.text = cherries.ToString();
-        }
-    }
-
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        if (other.gameObject.tag == "Enemy")
-        {
-            Enemy enemy = other.gameObject.GetComponent<Enemy>();
-
-            if (state == State.falling)
-            {
-                enemy.JumpedOn();
-                jump();
-            }
-            else
-            {
-                state = State.hurt;
-                if (other.gameObject.transform.position.x > transform.position.x)
-                {
-                    // Enemy is to my right, I get damaged and should move left
-                    rb.velocity = new Vector2(-hurtForce, rb.velocity.y);
-                }
-                else
-                {
-                    // Enemy is to my left, I get damaged and should move right
-                    rb.velocity = new Vector2(hurtForce, rb.velocity.y);
-                }
-            }
-        }
-    }
-
     private void Movement()
     {
         float hDirection = Input.GetAxis("Horizontal");
 
         //Moving left
 
-        if (hDirection < 0 && Input.GetButtonDown("Sprint"))
+        if (hDirection < 0)
         {
-            rb.velocity = new Vector2(-runningSpeed, rb.velocity.y);
-            transform.localScale = new Vector2(-1, 1);
-        }
-
-        else if (hDirection < 0)
-        {
-            rb.velocity = new Vector2(-walkingSpeed, rb.velocity.y);
+            if (Input.GetButtonDown("Sprint"))
+            {
+                rb.velocity = new Vector2(-runningSpeed, rb.velocity.y);
+            }
+            else
+            {
+                rb.velocity = new Vector2(-walkingSpeed, rb.velocity.y);
+            }
             transform.localScale = new Vector2(-1, 1);
         }
 
         //Moving right
 
-        if (hDirection > 0 && Input.GetButtonDown("Sprint"))
-        {
-            rb.velocity = new Vector2(runningSpeed, rb.velocity.y);
-            transform.localScale = new Vector2(1, 1);
-        }
-
-        else if (hDirection < 0)
-        {
-            rb.velocity = new Vector2(walkingSpeed, rb.velocity.y);
+        if (hDirection > 0) {
+            if (Input.GetButtonDown("Sprint"))
+            {
+                rb.velocity = new Vector2(runningSpeed, rb.velocity.y);
+            }
+            else {
+                rb.velocity = new Vector2(walkingSpeed, rb.velocity.y);
+            }
             transform.localScale = new Vector2(1, 1);
         }
 
@@ -164,7 +121,7 @@ public class CatController : MonoBehaviour {
         {
             if (coll.IsTouchingLayers(path))
             {
-                falling_tile.Play();
+                falling_path.Play();
                 state = State.idle;
             }
             else if (coll.IsTouchingLayers(grass))
@@ -206,7 +163,7 @@ public class CatController : MonoBehaviour {
     {
         if (coll.IsTouchingLayers(path))
         {
-            walking_tile.Play();
+            walking_path.Play();
         }
         else if (coll.IsTouchingLayers(grass))
         {
