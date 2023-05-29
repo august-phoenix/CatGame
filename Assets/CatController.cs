@@ -89,7 +89,7 @@ public class CatController : MonoBehaviour {
             jumping_path.Play();
             jump();
         }
-        if (Input.GetButtonDown("Jump") && coll.IsTouchingLayers(grass))
+        else if (Input.GetButtonDown("Jump") && coll.IsTouchingLayers(grass))
         {
             jumping_grass.Play();
             jump();
@@ -135,23 +135,16 @@ public class CatController : MonoBehaviour {
                 state = State.idle;
             }
         }
-        else if (state == State.hurt)
-        {
-            if (Mathf.Abs(rb.velocity.x) < .1f)
-            {
-                state = State.idle;
-            }
-        }
 
-        else if (Mathf.Abs(rb.velocity.x) > 2f)
+        else if (Mathf.Abs(rb.velocity.x) > walkingSpeed)
         {
             //Moving
             state = State.running;
         }
 
-        else if (Mathf.Abs(rb.velocity.x) < 2f && Mathf.Abs(rb.velocity.x) > 0)
+        else if (Mathf.Abs(rb.velocity.x) > 0 && Mathf.Abs(rb.velocity.x) < runningSpeed)
         {
-
+            state = State.walking;
         }
         else
         {
